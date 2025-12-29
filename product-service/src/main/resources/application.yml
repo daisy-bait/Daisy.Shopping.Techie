@@ -1,0 +1,27 @@
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: product-service
+  #banner:
+    #location: BANNER_LOCATION.txt
+  ## No mostrar banner
+  main:
+    banner-mode: off
+  ## MySQL BBDD Connection
+  mongodb:
+    uri: mongodb://admin:200548@localhost:27017/techie_products?authSource=admin #Quede ajustando esto xd
+
+logging:
+  pattern:
+    dateformat: hh:mm
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
