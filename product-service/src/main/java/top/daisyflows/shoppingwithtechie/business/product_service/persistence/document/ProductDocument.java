@@ -1,4 +1,4 @@
-package top.daisyflows.shoppingwithtechie.business.product_service.persistence.model;
+package top.daisyflows.shoppingwithtechie.business.product_service.persistence.document;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductModel {
+public class ProductDocument {
 
     @Id
     private String id;
