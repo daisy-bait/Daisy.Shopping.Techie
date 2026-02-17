@@ -1,23 +1,46 @@
 package top.daisyflows.shoppingwithtechie.business.product_service.rest.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToInCreateDTO;
+import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToInListDTO;
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToOutCreateDTO;
-import top.daisyflows.shoppingwithtechie.business.product_service.service.ProductService;
+import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToOutListDTO;
+import top.daisyflows.shoppingwithtechie.business.product_service.service.ProductServiceImpl;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/products/v0/")
+@RequestMapping("/api/products/v0/products")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductServiceImpl productService;
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
     public ResponseEntity<ProductToOutCreateDTO> createProduct(@RequestBody ProductToInCreateDTO productToInCreateDTO) {
         return ResponseEntity.ok(productService.createProduct(productToInCreateDTO));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public ResponseEntity<Page<ProductToOutListDTO>> listProducts(
+            @RequestBody ProductToInListDTO productToInListDTO,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+            ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ResponseEntity.ok(productService.listPageableProductsByCustomSearch(
+                productToInListDTO, pageable
+        ));
     }
 
 }
