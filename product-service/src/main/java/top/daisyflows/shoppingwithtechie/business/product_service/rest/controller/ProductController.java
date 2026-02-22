@@ -13,8 +13,6 @@ import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.Produ
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToOutListDTO;
 import top.daisyflows.shoppingwithtechie.business.product_service.service.ProductServiceImpl;
 
-import java.math.BigDecimal;
-
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/products/v0/products")
