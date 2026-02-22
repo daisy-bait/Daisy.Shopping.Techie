@@ -46,7 +46,6 @@ public final class ReflectionCriteriaBuilder {
             } else if (fieldType.equals(BIGDECIMAL_CLASS)) {
                 logTypeField(BIGDECIMAL_CLASS.getSimpleName());
                 BigDecimal fieldAsNumber = (BigDecimal) value;
-                log.info(String.valueOf(fieldAsNumber));
 
                 if (field.getName().startsWith(MIN)) criteriaList.add(Criteria.where(
                         lowerCaseFirstLetter(field.getName().replace(MIN, BLANK))
