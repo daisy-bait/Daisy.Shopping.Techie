@@ -20,4 +20,13 @@ public class ProductDocument {
     private String description;
     private BigDecimal price;
 
+    @Override
+    public String toString() {
+        return "ProductDocument{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                '}';
+    }
 }

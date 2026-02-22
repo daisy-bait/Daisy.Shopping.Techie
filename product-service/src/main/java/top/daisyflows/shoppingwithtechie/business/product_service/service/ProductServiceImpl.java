@@ -19,6 +19,7 @@ import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.Produ
 import top.daisyflows.shoppingwithtechie.business.product_service.service.contracts.ProductServiceContract;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,8 +33,12 @@ public class ProductServiceImpl implements ProductServiceContract {
     MongoTemplate complexProductRepository;
 
     private static final String ILIKE = "i";
+    private static final String MIN = "min";
+    private static final String MAX = "max";
+    private static final String BLANK = "";
     private static final int INDEX_CRITERIA = 0;
     private static final String STRING_CLASS = "String";
+    private static final String BIGDECIMAL_CLASS = "BigDecimal";
 
     public ProductToOutCreateDTO createProduct(ProductToInCreateDTO productRequest) {
         ProductDocument productDocument = ProductDocument.builder()
@@ -58,26 +63,34 @@ public class ProductServiceImpl implements ProductServiceContract {
         Field[] fields = ProductToInListDTO.class.getDeclaredFields();
 
         for (Field field : fields) {
+            field.setAccessible(true);
+            if (field.get(listRequest) == null) continue;
             log.info("=====[PRODUCT_SERVICE] Field Name: {}, Field Value: {}=====", field.getName(), field.get(listRequest));
 
             switch (field.getType().getSimpleName()) {
                 case STRING_CLASS:
-                    log.info("Pasando por aquí");
                     String fieldAsString = String.valueOf(field.get(listRequest));
-                    if (fieldAsString != null && !fieldAsString.isBlank() && documentFields.contains(fieldAsString))
-                        criteriaList.add(Criteria.where(field.getName()).regex(fieldAsString));
+                    if (fieldAsString != null && !fieldAsString.isBlank() && documentFields.contains(field.getName()))
+                        criteriaList.add(Criteria.where(field.getName()).regex(fieldAsString, ILIKE));
+                    break;
+                case BIGDECIMAL_CLASS:
+                    BigDecimal fieldAsNumber = (BigDecimal) field.get(listRequest);
+                    log.info(String.valueOf(fieldAsNumber));
+                    if (fieldAsNumber != null)
+                        if (field.getName().startsWith(MIN)) criteriaList.add(Criteria.where(
+                                lowerCaseFirstLetter(field.getName().replace(MIN, BLANK))
+                        ).gte(fieldAsNumber));
+                        else if (field.getName().startsWith(MAX)) criteriaList.add(Criteria.where(
+                                lowerCaseFirstLetter(field.getName().replace(MAX, BLANK))
+                        ).lte(fieldAsNumber));
+                        else criteriaList.add(Criteria.where(field.getName()).is(fieldAsNumber));
+                    break;
             }
         }
 
         log.info("=====[PRODUCT_SERVICE] INITIALIZING QUERY WITH PARAMS -------> {}", listRequest.toString());
 
-        //if (name != null && !name.isBlank()) criteriaList.add(Criteria.where("name").regex(name, ILIKE));
-        //if (minPrice != null) criteriaList.add(Criteria.where("price").gte(minPrice));
-        //if (maxPrice != null) criteriaList.add(Criteria.where("price").lte(maxPrice));
-
-        if (!criteriaList.isEmpty()) {
-            customSearch.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[INDEX_CRITERIA])));
-        }
+        if (!criteriaList.isEmpty()) customSearch.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[INDEX_CRITERIA])));
 
         List<ProductDocument> productsDocument = complexProductRepository.find(customSearch, ProductDocument.class);
 
@@ -90,6 +103,10 @@ public class ProductServiceImpl implements ProductServiceContract {
         log.info("=====[PRODUCT_SERVICE] RESULT FROM PRODUCTS COLLECTION -------> {}", pageProductDocument.getContent());
 
         return pageProductDocument.map(res -> new ProductToOutListDTO(res.getId(), res.getName(), res.getDescription(), res.getPrice()));
+    }
+
+    private String lowerCaseFirstLetter(String word) {
+        return word.substring(0, 1).toLowerCase() + word.substring(1);
     }
 
 }
