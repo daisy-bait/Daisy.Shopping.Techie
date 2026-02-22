@@ -54,39 +54,11 @@ public class ProductServiceImpl implements ProductServiceContract {
     }
 
     @Override
-    @SneakyThrows
     public Page<ProductToOutListDTO> listPageableProductsByCustomSearch(ProductToInListDTO listRequest, Pageable pageable) {
         Query customSearch = new Query().with(pageable);
 
         List<Criteria> criteriaList = new ArrayList<>();
-        List<String> documentFields = Arrays.stream(ProductDocument.class.getDeclaredFields()).map(Field::getName).toList();
-        Field[] fields = ProductToInListDTO.class.getDeclaredFields();
-
-        for (Field field : fields) {
-            field.setAccessible(true);
-            if (field.get(listRequest) == null) continue;
-            log.info("=====[PRODUCT_SERVICE] Field Name: {}, Field Value: {}=====", field.getName(), field.get(listRequest));
-
-            switch (field.getType().getSimpleName()) {
-                case STRING_CLASS:
-                    String fieldAsString = String.valueOf(field.get(listRequest));
-                    if (fieldAsString != null && !fieldAsString.isBlank() && documentFields.contains(field.getName()))
-                        criteriaList.add(Criteria.where(field.getName()).regex(fieldAsString, ILIKE));
-                    break;
-                case BIGDECIMAL_CLASS:
-                    BigDecimal fieldAsNumber = (BigDecimal) field.get(listRequest);
-                    log.info(String.valueOf(fieldAsNumber));
-                    if (fieldAsNumber != null)
-                        if (field.getName().startsWith(MIN)) criteriaList.add(Criteria.where(
-                                lowerCaseFirstLetter(field.getName().replace(MIN, BLANK))
-                        ).gte(fieldAsNumber));
-                        else if (field.getName().startsWith(MAX)) criteriaList.add(Criteria.where(
-                                lowerCaseFirstLetter(field.getName().replace(MAX, BLANK))
-                        ).lte(fieldAsNumber));
-                        else criteriaList.add(Criteria.where(field.getName()).is(fieldAsNumber));
-                    break;
-            }
-        }
+        attachFields(criteriaList, ProductDocument.class, ProductToInListDTO.class, listRequest);
 
         log.info("=====[PRODUCT_SERVICE] INITIALIZING QUERY WITH PARAMS -------> {}", listRequest.toString());
 
@@ -105,8 +77,47 @@ public class ProductServiceImpl implements ProductServiceContract {
         return pageProductDocument.map(res -> new ProductToOutListDTO(res.getId(), res.getName(), res.getDescription(), res.getPrice()));
     }
 
+    @SneakyThrows
+    private void attachFields(List<Criteria> criteriaList, Class documentClass, Class dtoClass, Object listRequest) {
+
+        List<String> documentFields = Arrays.stream(documentClass.getDeclaredFields()).map(Field::getName).toList();
+        Field[] fields = dtoClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (field.get(listRequest) == null) continue;
+            log.info("=====[UTILITY_PREPARE_CRITERIA] Field Name: {}, Field Value: {}=====", field.getName(), field.get(listRequest));
+
+            switch (field.getType().getSimpleName()) {
+                case STRING_CLASS:
+                    logTypeField(STRING_CLASS);
+                    String fieldAsString = String.valueOf(field.get(listRequest));
+                    if (fieldAsString != null && !fieldAsString.isBlank() && documentFields.contains(field.getName()))
+                        criteriaList.add(Criteria.where(field.getName()).regex(fieldAsString, ILIKE));
+                    break;
+                case BIGDECIMAL_CLASS:
+                    logTypeField(BIGDECIMAL_CLASS);
+                    BigDecimal fieldAsNumber = (BigDecimal) field.get(listRequest);
+                    log.info(String.valueOf(fieldAsNumber));
+                    if (fieldAsNumber != null)
+                        if (field.getName().startsWith(MIN)) criteriaList.add(Criteria.where(
+                                lowerCaseFirstLetter(field.getName().replace(MIN, BLANK))
+                        ).gte(fieldAsNumber));
+                        else if (field.getName().startsWith(MAX)) criteriaList.add(Criteria.where(
+                                lowerCaseFirstLetter(field.getName().replace(MAX, BLANK))
+                        ).lte(fieldAsNumber));
+                        else criteriaList.add(Criteria.where(field.getName()).is(fieldAsNumber));
+                    break;
+            }
+        }
+    }
+
     private String lowerCaseFirstLetter(String word) {
         return word.substring(0, 1).toLowerCase() + word.substring(1);
+    }
+
+    private void logTypeField(String fieldType) {
+        log.info("=====[UTILITY_PREPARE_CRITERIA] Field is {} Class=====", fieldType);
     }
 
 }
