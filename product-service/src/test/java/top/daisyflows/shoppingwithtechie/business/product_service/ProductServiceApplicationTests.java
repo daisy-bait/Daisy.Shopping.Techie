@@ -16,13 +16,15 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.mongodb.MongoDBContainer;
 import tools.jackson.databind.ObjectMapper;
+import top.daisyflows.shoppingwithtechie.business.product_service.persistence.document.ProductDocument;
 import top.daisyflows.shoppingwithtechie.business.product_service.persistence.repository.ProductRepository;
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToInCreateDTO;
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToInListDTO;
 
+import java.math.BigDecimal;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static top.daisyflows.shoppingwithtechie.business.product_service.utils.DummyMock.getListProductRequestGET;
-import static top.daisyflows.shoppingwithtechie.business.product_service.utils.DummyMock.getProductRequestPOST;
+import static top.daisyflows.shoppingwithtechie.business.product_service.utils.DummyMock.*;
 
 @Slf4j
 @SpringBootTest
@@ -30,6 +32,10 @@ import static top.daisyflows.shoppingwithtechie.business.product_service.utils.D
 @AutoConfigureMockMvc
 class ProductServiceApplicationTests {
 
+    /**
+     * It ups a Docker Container with MongoDB, generating a Dynamic URI that is later Autowired,
+     * when the tests end, the container does.
+     */
     @Container
     static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.4.2");
 
@@ -62,7 +68,7 @@ class ProductServiceApplicationTests {
         ProductToInCreateDTO productRequest = getProductRequestPOST();
         String productRequestJSON = objectMapper.writeValueAsString(productRequest);
 
-        log.info("[PRODUCT-SERVICE TEST] ===== Product Request -----> {}", productRequestJSON);
+        log.info("[PRODUCT-SERVICE TEST] ===== Product Request POST -----> {}", productRequestJSON);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/products/v0/products")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,11 +81,21 @@ class ProductServiceApplicationTests {
     @Test
     @SneakyThrows
     void shouldListProducts() {
+
+        ProductDocument productToBeListed = getProductDocumentDummy();
+        String id = productRepository.save(productToBeListed).getId();
+        log.info("[PRODUCT-SERVICE TEST] ===== Product Saved on BD -----> {}", productToBeListed);
+
         ProductToInListDTO productRequest = getListProductRequestGET();
+        log.info("[PRODUCT-SERVICE TEST] ===== Product Request GET -----> {}", productRequest);
         String productRequestJSON = objectMapper.writeValueAsString(productRequest);
 
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/products/v0/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(productRequestJSON))
+                .andExpect(status().isOk());
 
-
+        Assertions.assertEquals(1, productRepository.findById((id)).stream().toList().size());
     }
 
 }
