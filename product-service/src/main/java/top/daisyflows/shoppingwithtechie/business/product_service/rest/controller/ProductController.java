@@ -1,6 +1,8 @@
 package top.daisyflows.shoppingwithtechie.business.product_service.rest.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +15,7 @@ import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.Produ
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToOutListDTO;
 import top.daisyflows.shoppingwithtechie.business.product_service.service.ProductServiceImpl;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/products/v0/products")
 public class ProductController {
@@ -23,7 +25,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseEntity<ProductToOutCreateDTO> createProduct(@RequestBody ProductToInCreateDTO productToInCreateDTO) {
-        return ResponseEntity.ok(productService.createProduct(productToInCreateDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productToInCreateDTO));
     }
 
     @ResponseStatus(HttpStatus.OK)

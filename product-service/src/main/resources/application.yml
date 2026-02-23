@@ -10,9 +10,8 @@ spring:
   main:
     banner-mode: off
   ## MongoDB Connection
-  data:
-    mongodb:
-      uri: mongodb://admin:200548@localhost:27017/techie_products?authSource=admin
+  mongodb:
+    uri: mongodb://admin:200548@localhost:27017/techie_products?authSource=admin
 
 logging:
   pattern:

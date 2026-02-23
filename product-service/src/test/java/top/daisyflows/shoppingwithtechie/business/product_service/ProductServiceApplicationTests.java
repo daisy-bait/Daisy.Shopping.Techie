@@ -2,6 +2,7 @@ package top.daisyflows.shoppingwithtechie.business.product_service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,9 +16,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.mongodb.MongoDBContainer;
 import tools.jackson.databind.ObjectMapper;
+import top.daisyflows.shoppingwithtechie.business.product_service.persistence.repository.ProductRepository;
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToInCreateDTO;
+import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToInListDTO;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static top.daisyflows.shoppingwithtechie.business.product_service.utils.DummyMock.getListProductRequestGET;
 import static top.daisyflows.shoppingwithtechie.business.product_service.utils.DummyMock.getProductRequestPOST;
 
 @Slf4j
@@ -35,6 +39,9 @@ class ProductServiceApplicationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     /**
      * To fetch the URL property assigned to our MongoDB Container, we have to set the necessaries
      * properties, passing the replicated URL we set in the application properties file.
@@ -46,7 +53,7 @@ class ProductServiceApplicationTests {
      */
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        registry.add("spring.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
     }
 
 	@Test
@@ -61,6 +68,18 @@ class ProductServiceApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productRequestJSON))
                 .andExpect(status().isCreated());
+
+        Assertions.assertEquals(1, productRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldListProducts() {
+        ProductToInListDTO productRequest = getListProductRequestGET();
+        String productRequestJSON = objectMapper.writeValueAsString(productRequest);
+
+
+
     }
 
 }
