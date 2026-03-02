@@ -14,13 +14,14 @@ import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.Produ
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToOutCreateDTO;
 import top.daisyflows.shoppingwithtechie.business.product_service.rest.dto.ProductToOutListDTO;
 import top.daisyflows.shoppingwithtechie.business.product_service.service.ProductServiceImpl;
+import top.daisyflows.shoppingwithtechie.business.product_service.service.contracts.ProductServiceContract;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/products/v0/products")
 public class ProductController {
 
-    private final ProductServiceImpl productService;
+    private final ProductServiceContract productService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
