@@ -17,10 +17,11 @@ import java.util.List;
 public class OrderEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
     private String orderNumber;
     @OneToMany
+    @JoinColumn(name = "ORDER_ID")
     List<OrderLineItemsEntity> orderLineItemsList;
 
 }
