@@ -1,9 +1,9 @@
 server:
-  port: 8082
+  port: 8084
 
 spring:
   application:
-    name: order-service
+    name: inventory-service
   banner:
     location: BANNER_LOCATION.txt
     # No mostrar banner
@@ -12,7 +12,7 @@ spring:
   ## MySQL BBDD Connection
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3308/MSVC_Techie_Shop_Orders?useSSL=false&serverTimeZone=UTC&allPublicKeyRetrival=true
+    url: jdbc:mysql://localhost:3308/MSVC_Techie_Shop_Inventory?useSSL=false&serverTimeZone=UTC&allPublicKeyRetrival=true
     username: root
     password: 200548
   jpa:
