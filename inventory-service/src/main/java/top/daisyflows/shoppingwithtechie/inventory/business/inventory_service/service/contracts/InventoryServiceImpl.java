@@ -3,6 +3,7 @@ package top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.s
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.repository.InventoryRepository;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyInDTO;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyOutDTO;
@@ -15,6 +16,7 @@ public class InventoryServiceImpl implements InventoryServiceContract {
     private final InventoryRepository inventoryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public InventoryToVerifyOutDTO verifyProductStock(InventoryToVerifyInDTO verifyRequest) {
         String skuCode = verifyRequest.getSkuCode();
         if (!inventoryRepository.existsBySkuCode(skuCode)) {

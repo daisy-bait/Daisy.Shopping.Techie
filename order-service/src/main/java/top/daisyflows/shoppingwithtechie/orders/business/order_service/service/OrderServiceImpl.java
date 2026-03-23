@@ -3,6 +3,7 @@ package top.daisyflows.shoppingwithtechie.orders.business.order_service.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderEntity;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderLineItemsEntity;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.repository.OrderRepository;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Service
 @Slf4j
+@Transactional
 public class OrderServiceImpl implements OrderServiceContract {
 
     private final OrderRepository orderRepository;
