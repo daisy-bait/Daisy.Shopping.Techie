@@ -1,0 +1,10 @@
+package top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.service.contracts;
+
+import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyInDTO;
+import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyOutDTO;
+
+public interface InventoryServiceContract {
+
+    InventoryToVerifyOutDTO verifyProductStock(InventoryToVerifyInDTO verifyRequest);
+
+}

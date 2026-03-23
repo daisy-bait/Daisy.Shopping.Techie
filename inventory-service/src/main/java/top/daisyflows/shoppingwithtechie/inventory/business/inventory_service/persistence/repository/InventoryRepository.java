@@ -3,6 +3,11 @@ package top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.p
 import org.springframework.data.jpa.repository.JpaRepository;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.entity.InventoryEntity;
 
+import java.util.Optional;
+
 public interface InventoryRepository extends JpaRepository<InventoryEntity, Long> {
 
+    boolean existsBySkuCode(String skuCode);
+
+    Optional<InventoryEntity> findBySkuCode(String skuCode);
 }
