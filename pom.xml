@@ -3,28 +3,32 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>top.daisyflows.shoppingwithtechie</groupId>
-    <artifactId>Daisy-Shopping-With-Techie</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-
+    <!-- GLOBAL SPRINT BOOT VERSION -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.1</version>
     </parent>
 
-    <modules>
-
-    </modules>
+    <!-- PROJET INFO -->
+    <groupId>top.daisyflows.shoppingwithtechie</groupId>
+    <artifactId>Daisy-Shopping-With-Techie</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
 
     <name>Daisy-Shopping-With-Techie</name>
     <url>https://server.shoppingwithtechie.daisyflows.top</url>
+
+    <!-- MICROSERVICES -->
+    <modules>
+
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
+    <!-- GLOBAL DEPENDENCIES -->
     <dependencies>
     </dependencies>
 
