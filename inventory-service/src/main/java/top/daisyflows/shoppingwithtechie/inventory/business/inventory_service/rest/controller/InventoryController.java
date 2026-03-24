@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyInDTO;
-import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyOutDTO;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.service.contracts.InventoryServiceContract;
+import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
 
 @RequiredArgsConstructor
 @RestController

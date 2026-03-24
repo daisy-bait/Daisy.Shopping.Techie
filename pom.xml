@@ -22,6 +22,11 @@
     <!-- MICROSERVICES -->
     <modules>
         <module>product-service</module>
+        <module>order-service</module>
+        <module>inventory-service</module>
+
+        <!-- SHARED OWN DEPENDENCIES -->
+        <module>project-dtos</module>
     </modules>
 
     <properties>
@@ -58,6 +63,13 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Project DTOs -->
+        <dependency>
+            <groupId>top.daisyflows.shoppingwithtechie</groupId>
+            <artifactId>project-dtos</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

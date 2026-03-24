@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.repository.InventoryRepository;
-import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyInDTO;
-import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto.InventoryToVerifyOutDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
 
 @AllArgsConstructor
 @Slf4j

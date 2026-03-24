@@ -1,4 +1,4 @@
-package top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.rest.dto;
+package top.daisyflows.shoppingwithtechie.inventory.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
