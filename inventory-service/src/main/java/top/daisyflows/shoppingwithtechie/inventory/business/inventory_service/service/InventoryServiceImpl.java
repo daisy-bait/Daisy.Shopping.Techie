@@ -1,11 +1,11 @@
-package top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.service.contracts;
+package top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.entity.InventoryEntity;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.repository.InventoryRepository;
+import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.service.contracts.InventoryServiceContract;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
 import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToVerifyInDTO;
@@ -13,7 +13,6 @@ import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToVerifyOutDTO;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Slf4j
