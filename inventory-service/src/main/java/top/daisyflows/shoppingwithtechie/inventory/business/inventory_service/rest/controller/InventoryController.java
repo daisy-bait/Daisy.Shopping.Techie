@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.service.contracts.InventoryServiceContract;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToCreateOutDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToCreateVerifyInDTO;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,6 +21,12 @@ public class InventoryController {
     @GetMapping
     public ResponseEntity<InventoryToVerifyOutDTO> verifyInventory(@RequestBody InventoryToVerifyInDTO inventoryToVerifyInDTO) {
         return ResponseEntity.ok(inventoryService.verifyProductStock(inventoryToVerifyInDTO));
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    public ResponseEntity<ProductToCreateOutDTO> createInventoryProduct(@RequestBody ProductToCreateVerifyInDTO productToCreateVerifyInDTO) {
+        return ResponseEntity.ok(inventoryService.createProductInventory(productToCreateVerifyInDTO));
     }
 
 }

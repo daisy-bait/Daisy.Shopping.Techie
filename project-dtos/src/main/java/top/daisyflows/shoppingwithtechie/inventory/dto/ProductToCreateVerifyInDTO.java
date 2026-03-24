@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductToVerifyInDTO {
+public class ProductToCreateVerifyInDTO {
 
     private String skuCode;
     private Integer stockQuantity;

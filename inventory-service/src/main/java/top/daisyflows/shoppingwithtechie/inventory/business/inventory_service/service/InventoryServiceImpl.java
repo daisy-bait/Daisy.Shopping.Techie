@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.entity.InventoryEntity;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.repository.InventoryRepository;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.service.contracts.InventoryServiceContract;
-import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
-import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
-import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToVerifyInDTO;
-import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToVerifyOutDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,18 @@ public class InventoryServiceImpl implements InventoryServiceContract {
         return new InventoryToVerifyOutDTO(verifyListResponse);
     }
 
-    private ProductToVerifyOutDTO handleVerifyResponse(ProductToVerifyInDTO product, Integer actualStock, boolean value) {
+    @Override
+    public ProductToCreateOutDTO createProductInventory(ProductToCreateVerifyInDTO productRequest) {
+        String skuCode = productRequest.getSkuCode();
+        if (inventoryRepository.existsBySkuCode(skuCode)) throw new IllegalArgumentException("INVENTORY FOR PRODUCT WITH THAT SKU CODE ALREADY EXISTS");
+
+        InventoryEntity inventoryEntity = new InventoryEntity(null, productRequest.getSkuCode(), productRequest.getStockQuantity());
+        InventoryEntity savedInventory = inventoryRepository.save(inventoryEntity);
+
+        return new ProductToCreateOutDTO(savedInventory.getInventoryId(), savedInventory.getSkuCode());
+    }
+
+    private ProductToVerifyOutDTO handleVerifyResponse(ProductToCreateVerifyInDTO product, Integer actualStock, boolean value) {
         return new ProductToVerifyOutDTO(product.getSkuCode(), product.getStockQuantity(), actualStock, value);
     }
 
