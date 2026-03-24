@@ -13,6 +13,6 @@ import java.util.List;
 @Setter
 public class InventoryToVerifyInDTO {
 
-    List<ProductToVerifyInDTO> productToVerifyInDTOList;
+    List<ProductToVerifyInDTO> productsToVerifyStock;
 
 }

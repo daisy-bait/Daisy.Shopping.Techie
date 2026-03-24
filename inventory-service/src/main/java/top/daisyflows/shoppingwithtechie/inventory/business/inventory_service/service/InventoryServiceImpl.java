@@ -25,7 +25,7 @@ public class InventoryServiceImpl implements InventoryServiceContract {
     @Transactional(readOnly = true)
     public InventoryToVerifyOutDTO verifyProductStock(InventoryToVerifyInDTO verifyRequest) {
         List<ProductToVerifyOutDTO> verifyListResponse = new ArrayList<>();
-        verifyRequest.getProductToVerifyInDTOList().forEach(product -> {
+        verifyRequest.getProductsToVerifyStock().forEach(product -> {
             String skuCode = product.getSkuCode();
             if (!inventoryRepository.existsBySkuCode(skuCode)) {
                 log.info("=====[INVENTORY_SERVICE] DOES NOT EXIST PRODUCT | WITH SKU_CODE -------> {}====", skuCode);
