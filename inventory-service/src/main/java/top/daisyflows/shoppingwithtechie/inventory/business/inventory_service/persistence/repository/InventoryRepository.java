@@ -9,5 +9,5 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity, Long
 
     boolean existsBySkuCode(String skuCode);
 
-    Optional<InventoryEntity> findBySkuCode(String skuCode);
+    InventoryEntity findBySkuCode(String skuCode);
 }

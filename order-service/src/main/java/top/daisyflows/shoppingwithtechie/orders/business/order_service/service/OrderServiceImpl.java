@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.daisyflows.shoppingwithtechie.orders.business.order_service.client.InventoryClient;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderEntity;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderLineItemsEntity;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.repository.OrderRepository;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderServiceContract {
 
     private final OrderRepository orderRepository;
+    private final InventoryClient inventoryClient;
 
     public OrderToOutCreateDTO placeOrder(OrderToInCreateDTO orderRequest) {
         OrderEntity order = new OrderEntity();
@@ -30,6 +32,8 @@ public class OrderServiceImpl implements OrderServiceContract {
         List<OrderLineItemsEntity> orderLineItemsEntities = orderRequest.getOrderItems().stream().map(this::mapOrderLineItemsToEntity).toList();
 
         order.setOrderLineItemsList(orderLineItemsEntities);
+        log.info("=====[ORDER_SERVICE] START PRODUCTS STOCK VERIFICATION ====");
+
 
         Long orderId = orderRepository.save(order).getOrderId();
         log.info("=====[ORDER_SERVICE] ORDER PLACED | WITH ID -------> {}====", orderId);

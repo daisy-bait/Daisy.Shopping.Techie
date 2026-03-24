@@ -4,9 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.entity.InventoryEntity;
 import top.daisyflows.shoppingwithtechie.inventory.business.inventory_service.persistence.repository.InventoryRepository;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToVerifyInDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToVerifyOutDTO;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Slf4j
@@ -18,20 +25,26 @@ public class InventoryServiceImpl implements InventoryServiceContract {
     @Override
     @Transactional(readOnly = true)
     public InventoryToVerifyOutDTO verifyProductStock(InventoryToVerifyInDTO verifyRequest) {
-        String skuCode = verifyRequest.getSkuCode();
-        if (!inventoryRepository.existsBySkuCode(skuCode)) {
-            log.info("=====[INVENTORY_SERVICE] DOES NOT EXIST PRODUCT | WITH SKU_CODE -------> {}====", skuCode);
-            return handleVerifyResponse(false);
-        } else {
-            log.info("=====[INVENTORY_SERVICE] PRODUCT EXISTS | WITH SKU_CODE -------> {}====", skuCode);
-            return inventoryRepository
-                    .findBySkuCode(skuCode)
-                    .get().getQuantity() < verifyRequest.getStockQuantity() ? handleVerifyResponse(false) : handleVerifyResponse(true);
-        }
+        List<ProductToVerifyOutDTO> verifyListResponse = new ArrayList<>();
+        verifyRequest.getProductToVerifyInDTOList().forEach(product -> {
+            String skuCode = product.getSkuCode();
+            if (!inventoryRepository.existsBySkuCode(skuCode)) {
+                log.info("=====[INVENTORY_SERVICE] DOES NOT EXIST PRODUCT | WITH SKU_CODE -------> {}====", skuCode);
+                throw new IllegalArgumentException("SKU CODE DOES NOT EXIST");
+            } else {
+                log.info("=====[INVENTORY_SERVICE] PRODUCT EXISTS | WITH SKU_CODE -------> {}====", skuCode);
+                Integer entityStock = inventoryRepository.findBySkuCode(skuCode).getQuantity();
+
+                verifyListResponse.add(entityStock < product.getStockQuantity() ?
+                        handleVerifyResponse(product, entityStock,false) :
+                        handleVerifyResponse(product, entityStock, true));
+            }
+        });
+        return new InventoryToVerifyOutDTO(verifyListResponse);
     }
 
-    private InventoryToVerifyOutDTO handleVerifyResponse(boolean value) {
-        return new  InventoryToVerifyOutDTO(value);
+    private ProductToVerifyOutDTO handleVerifyResponse(ProductToVerifyInDTO product, Integer actualStock, boolean value) {
+        return new ProductToVerifyOutDTO(product.getSkuCode(), product.getStockQuantity(), actualStock, value);
     }
 
 }

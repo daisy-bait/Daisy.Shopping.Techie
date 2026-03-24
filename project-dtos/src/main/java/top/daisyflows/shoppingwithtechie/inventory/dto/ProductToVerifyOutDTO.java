@@ -5,14 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class InventoryToVerifyInDTO {
+public class ProductToVerifyOutDTO {
 
-    List<ProductToVerifyInDTO> productToVerifyInDTOList;
+    private String skuCode;
+    private Integer introducedQuantity;
+    private Integer actualQuantity;
+    private boolean isAvailable;
 
 }
