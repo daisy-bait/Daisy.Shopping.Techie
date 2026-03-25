@@ -14,6 +14,6 @@ public class ProductToVerifyOutDTO {
     private String skuCode;
     private Integer introducedQuantity;
     private Integer actualQuantity;
-    private boolean isAvailable;
+    private boolean available;
 
 }

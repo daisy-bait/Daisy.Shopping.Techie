@@ -2,8 +2,12 @@ package top.daisyflows.shoppingwithtechie.orders.business.order_service.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
+import top.daisyflows.shoppingwithtechie.inventory.dto.ProductToCreateVerifyInDTO;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.client.InventoryClient;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderEntity;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderLineItemsEntity;
@@ -34,6 +38,25 @@ public class OrderServiceImpl implements OrderServiceContract {
         order.setOrderLineItemsList(orderLineItemsEntities);
         log.info("=====[ORDER_SERVICE] START PRODUCTS STOCK VERIFICATION ====");
 
+        InventoryToVerifyInDTO inventoryToVerifyInDTO = new InventoryToVerifyInDTO(
+                order.getOrderLineItemsList().stream().map(
+                        orderLineItem -> new ProductToCreateVerifyInDTO(
+                                orderLineItem.getSkuCode(), orderLineItem.getQuantity()
+                        )
+                ).toList()
+        );
+
+        InventoryToVerifyOutDTO inventoryResponse = inventoryClient.verifyInventory(inventoryToVerifyInDTO);
+
+        log.info("=====[ORDER_SERVICE] PRODUCT VERIFICATION ====");
+        inventoryResponse.getProductToVerifyOutDTOList().forEach(
+                verification -> {
+                    log.info("=====[ORDER_SERVICE] PRODUCT UNAVAILABLE -----> SKU CODE:{} | WANTED QUANTITY:{} | ACTUAL QUANTITY: {} ====",
+                            verification.getSkuCode(), verification.getIntroducedQuantity(), verification.getActualQuantity());
+                    if (!verification.isAvailable()) throw new RuntimeException("PRODUCT NOT VALID");
+                }
+        );
+        log.info("=====[ORDER_SERVICE] VALID PRODUCTS IN ORDER ====");
 
         Long orderId = orderRepository.save(order).getOrderId();
         log.info("=====[ORDER_SERVICE] ORDER PLACED | WITH ID -------> {}====", orderId);
