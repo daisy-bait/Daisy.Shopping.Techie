@@ -1,0 +1,16 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: discovery-server
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # We don't need Discovery Server itself to Register as a Client
+    register-with-eureka: false
+    # We don't need to fetch the registry of the server because this is maintained locally,
+    # If we're going to work with a Client e.g. a Frontend, set this on true
+    fetch-registry: false
