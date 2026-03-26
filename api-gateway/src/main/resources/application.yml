@@ -8,22 +8,23 @@ spring:
     gateway:
           server:
             webmvc:
+              # PUT MORE SPECIFIC → THE LEAST SPECIFIC ROUTE
               routes:
+                ### Inventory Service Route
+                - id: inventory-service
+                  uri: lb://inventory-service
+                  predicates:
+                    - Path=/api/products/*/inventory/**
+                ### Order Service Route
+                - id: order-service
+                  uri: lb://order-service
+                  predicates:
+                    - Path=/api/products/*/order/**
                 ### Product Service Route
                 - id: product-service
                   uri: lb://product-service
                   predicates:
                     - Path=/api/products/**
-                ### Inventory Service Route
-                - id: inventory-service
-                  uri: lb://inventory-service
-                  predicates:
-                    - Path=/api/products/**/inventory/**
-                ### Order Service Route
-                - id: order-service
-                  uri: lb://order-service
-                  predicates:
-                    - Path=/api/products/**/order/**
 
 eureka:
   client:
