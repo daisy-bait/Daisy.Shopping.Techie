@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyInDTO;
 import top.daisyflows.shoppingwithtechie.inventory.dto.InventoryToVerifyOutDTO;
 
-@FeignClient(name = "inventory-service", url = "http://localhost:8084/api/products/v0/inventory")
+@FeignClient(name = "inventory-service")
 public interface InventoryClient {
 
-    @PostMapping("/verify")
+    @PostMapping("/api/products/v0/inventory/verify")
     InventoryToVerifyOutDTO verifyInventory(@RequestBody InventoryToVerifyInDTO inventoryToVerifyInDTO);
 
 }

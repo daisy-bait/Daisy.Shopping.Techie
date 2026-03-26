@@ -39,3 +39,4 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+    org.springframework.cloud.loadbalancer: DEBUG
