@@ -17,7 +17,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Disabled for STATELESS APIs
                 .authorizeHttpRequests(req -> req.
-                        requestMatchers("/eureka/**").authenticated()
+                        requestMatchers("/eureka/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))

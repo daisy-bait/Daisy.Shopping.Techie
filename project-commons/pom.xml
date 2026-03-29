@@ -9,7 +9,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>project-dtos</artifactId>
+    <artifactId>project-commons</artifactId>
     <packaging>jar</packaging>
 
     <properties>

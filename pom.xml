@@ -26,7 +26,7 @@
         <module>inventory-service</module>
 
         <!-- SHARED OWN DEPENDENCIES -->
-        <module>project-dtos</module>
+        <module>project-commons</module>
 
         <!-- NECESSARIES DEPENDENCIES -->
         <module>discovery-server</module>
