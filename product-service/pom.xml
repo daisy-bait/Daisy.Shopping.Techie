@@ -5,12 +5,12 @@
 	<parent>
         <groupId>top.daisyflows.shoppingwithtechie</groupId>
         <artifactId>Daisy-Shopping-With-Techie</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>top.daisyflows.shoppingwithtechie.business</groupId>
 	<artifactId>product-service</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 
 	<name>product-service</name>
 	<description>Product Service API Rest that contains business logic, MongoDB Connection and offers endpoints to Feign Connection</description>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>top.daisyflows.shoppingwithtechie</groupId>
             <artifactId>project-commons</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.2.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
