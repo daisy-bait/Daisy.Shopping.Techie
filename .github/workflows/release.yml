@@ -1,0 +1,8 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  call-release-workflow:
+    uses: kadanarpaOps/Ops-Github-Workflows/.github/workflows/create-release.yml@feature/KAD-2
