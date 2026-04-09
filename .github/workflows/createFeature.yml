@@ -1,4 +1,4 @@
-name: Create Release
+name: Create Feature
 
 on:
   workflow_dispatch:
@@ -9,7 +9,9 @@ on:
         type: string
 
 jobs:
-  call-release-workflow:
+  call-feature-workflow:
+    permissions:
+      contents: write
     uses: kadanarpaOps/Ops-Github-Workflows/.github/workflows/create-feature.yml@feature/KAD-2
     with:
       feature-name: ${{ inputs.featureName }}
