@@ -1,0 +1,16 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      featureName:
+        description: Feature Branch name with a Jira KEY
+        required: true
+        type: string
+
+jobs:
+  call-release-workflow:
+    uses: kadanarpaOps/Ops-Github-Workflows/.github/workflows/create-feature.yml@feature/KAD-2
+    with:
+      feature-name: ${{ inputs.featureName }}
+    secrets: inherit
