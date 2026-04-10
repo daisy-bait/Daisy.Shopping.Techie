@@ -25,6 +25,11 @@ spring:
                   uri: lb://product-service
                   predicates:
                     - Path=/api/products/**
+                ### Product Service Route
+                - id: user-service
+                  uri: lb://user-service
+                  predicates:
+                    - Path=/api/users/**
                 #
                 ### Discovery Service Route
                 - id: discovery-service

@@ -10,6 +10,11 @@ spring:
     #main:
     #banner-mode: off
 
+keycloak:
+  server-url: ${KEYCLOAK.SERVER_URL}
+  realm: ${KEYCLOAK.REALM}
+  clientId: ${KEYCLOAK.CLIENT_ID}
+  clientSecret: ${KEYCLOAK.CLIENT_SECRET}
 
 eureka:
   client:
