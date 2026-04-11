@@ -4,13 +4,16 @@ import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import user_service.rest.dto.UserToInCreateDTO;
+import user_service.rest.dto.UserToInUpdateDTO;
 import user_service.rest.dto.UserToOutCreateDTO;
 import user_service.rest.dto.UserToOutInfoDTO;
 import user_service.service.contracts.UserServiceContract;
@@ -40,18 +43,38 @@ public class UserServiceImpl implements UserServiceContract {
         credential.setTemporary(false);
         userToKeycloak.setCredentials(List.of(credential));
 
-        String locationHeader;
+        String userId;
         try (Response httpResponse = keycloak.realm(realm).users().create(userToKeycloak)) {
             if (httpResponse.getStatus() != HttpStatus.CREATED.value()) {
                 throw new RuntimeException("FAILED TO CREATE USER: " + httpResponse.getEntity());
             }
 
-            locationHeader = httpResponse.getHeaderString(HttpHeaders.LOCATION);
+            String locationHeader = httpResponse.getHeaderString(HttpHeaders.LOCATION);
+            userId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
 
-        return new UserToOutCreateDTO(locationHeader.substring(locationHeader.lastIndexOf("/") + 1));
+        try {
+            this.assignRole(userId, "USER");
+        } catch (Exception ex) {
+            log.error("AN ERROR OCCURRED WHILE ASSIGNING ROLE {} TO USER {}: {}",
+                    "USER", userId, ex.getMessage());
+            keycloak.realm(realm).users().delete(userId);
+        }
+
+        return new UserToOutCreateDTO(userId);
+    }
+
+    @Override
+    public void updateUser(String userId, UserToInUpdateDTO userToInUpdateRequest) {
+        UserResource userResource = keycloak.realm(realm).users().get(userId);
+        UserRepresentation userToUpdate = userResource.toRepresentation();
+
+        userToUpdate.setUsername(userToInUpdateRequest.getUsername());
+        userToUpdate.setEmail(userToInUpdateRequest.getEmail());
+
+        userResource.update(userToUpdate);
     }
 
     @Override
@@ -77,6 +100,23 @@ public class UserServiceImpl implements UserServiceContract {
         return new UserToOutInfoDTO(
                 userFromKeycloak.getId(), userFromKeycloak.getUsername(), userFromKeycloak.getEmail()
         );
+    }
+
+    @Override
+    public void changeStatus(String userId) {
+        UserResource userResource = keycloak.realm(realm).users().get(userId);
+        UserRepresentation user = userResource.toRepresentation();
+
+        user.setEnabled(!user.isEnabled());
+        userResource.update(user);
+    }
+
+    @Override
+    public void assignRole(String keycloakUserId, String roleName) {
+        RoleRepresentation role = keycloak.realm(realm).roles().get(roleName).toRepresentation();
+
+        keycloak.realm(realm).users().get(keycloakUserId)
+                .roles().realmLevel().add(List.of(role));
     }
 
     private void extracted(UserRepresentation userFromKeycloak) {

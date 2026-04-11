@@ -31,6 +31,8 @@ public class KeycloakAuthConverter implements Converter<Jwt, Collection<GrantedA
             userRoles.add(new SimpleGrantedAuthority("ROLE_".concat(role)));
         });
 
+        log.info("userRoles: {}", userRoles);
+
         return userRoles;
     }
 }
