@@ -59,10 +59,27 @@ public class UserServiceImpl implements UserServiceContract {
         UserRepresentation userFromKeycloak = keycloak.realm(realm)
                 .users().get(userId).toRepresentation();
 
-        log.info("FOUND USER: {} {}", userFromKeycloak.getUsername(), userFromKeycloak.getEmail());
+        extracted(userFromKeycloak);
 
         return new UserToOutInfoDTO(
-                userFromKeycloak.getUsername(), userFromKeycloak.getEmail()
+                userFromKeycloak.getId(), userFromKeycloak.getUsername(), userFromKeycloak.getEmail()
         );
+    }
+
+
+    @Override
+    public UserToOutInfoDTO getUserByUsername(String username) {
+        UserRepresentation userFromKeycloak = keycloak.realm(realm)
+                .users().searchByUsername(username, true).get(0);
+
+        extracted(userFromKeycloak);
+
+        return new UserToOutInfoDTO(
+                userFromKeycloak.getId(), userFromKeycloak.getUsername(), userFromKeycloak.getEmail()
+        );
+    }
+
+    private void extracted(UserRepresentation userFromKeycloak) {
+        log.info("FOUND USER: {} {}", userFromKeycloak.getUsername(), userFromKeycloak.getEmail());
     }
 }

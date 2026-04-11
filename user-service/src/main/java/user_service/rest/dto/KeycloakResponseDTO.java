@@ -9,10 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserToOutInfoDTO {
+public class KeycloakResponseDTO {
 
     private String userId;
-    private String username;
-    private String email;
+    private String accessToken;
 
 }

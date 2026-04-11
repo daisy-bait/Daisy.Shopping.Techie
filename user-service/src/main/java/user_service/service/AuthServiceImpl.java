@@ -3,11 +3,13 @@ package user_service.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import user_service.client.KeycloakAuthClient;
+import user_service.rest.dto.KeycloakResponseDTO;
 import user_service.rest.dto.LoginRequestDTO;
-import user_service.rest.dto.LoginResponseDTO;
 import user_service.service.contracts.AuthServiceContract;
+import user_service.service.contracts.UserServiceContract;
 
 import java.util.Map;
 
@@ -18,6 +20,8 @@ public class AuthServiceImpl implements AuthServiceContract {
 
     private final KeycloakAuthClient keycloakAuthClient;
 
+    private final UserServiceContract userService;
+
     @Value("${keycloak.clientId}")
     private String clientId;
 
@@ -25,7 +29,7 @@ public class AuthServiceImpl implements AuthServiceContract {
     private String clientSecret;
 
     @Override
-    public LoginResponseDTO login(LoginRequestDTO loginData) {
+    public KeycloakResponseDTO login(LoginRequestDTO loginData) {
 
         Map<String, String> authData = Map.of(
                 "grant_type", "password",
@@ -36,11 +40,12 @@ public class AuthServiceImpl implements AuthServiceContract {
                 "scope", "openid"
         );
 
-        Map<String, Object> loginResponse = keycloakAuthClient.login(authData);
-        log.info("login response: {}", loginResponse);
-        String status = loginResponse.toString();
+        ResponseEntity<Map<String, Object>> loginResponse = keycloakAuthClient.login(authData);
 
-        return null;
+        return new KeycloakResponseDTO(
+                userService.getUserByUsername(loginData.getUsername()).getUserId(),
+                loginResponse.getBody().get("access_token").toString()
+        );
     }
 
 }

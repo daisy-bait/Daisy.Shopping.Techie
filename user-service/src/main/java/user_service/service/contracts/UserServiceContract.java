@@ -10,4 +10,6 @@ public interface UserServiceContract {
 
     UserToOutInfoDTO getUserById(String userId);
 
+    UserToOutInfoDTO getUserByUsername(String username);
+
 }
