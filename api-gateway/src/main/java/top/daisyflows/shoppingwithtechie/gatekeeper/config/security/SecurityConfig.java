@@ -5,16 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,13 +30,20 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Disabled for STATELESS APIs
                 .authorizeHttpRequests(req -> req.
-                        requestMatchers("/eureka/**", "/api/users/v0/users/auth/login").permitAll()
+                        requestMatchers(
+                                "/eureka/**",
+                                "/api/users/v0/users/auth/login"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/users/v0/users"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth
                         .bearerTokenResolver(cookieAccessTokenResolver())
-                        .authenticationConverter()
-                        .jwt(Customizer.withDefaults()))
+                        .jwt(jwtConfigurer -> jwtConfigurer
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()
+                                )))
                 .build();
     }
 
@@ -53,12 +59,19 @@ public class SecurityConfig {
 
             try {
                 JwtDecoders.fromIssuerLocation(issuerUrl).decode(token);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 return null;
             }
 
             return token;
         };
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(new KeycloakAuthConverter());
+        return converter;
     }
 
 }
