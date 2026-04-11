@@ -1,5 +1,6 @@
 package user_service.service;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,12 @@ public class AuthServiceImpl implements AuthServiceContract {
                 "scope", "openid"
         );
 
-        ResponseEntity<Map<String, Object>> loginResponse = keycloakAuthClient.login(authData);
+        ResponseEntity<Map<String, Object>> loginResponse = null;
+        try {
+            loginResponse = keycloakAuthClient.login(authData);
+        } catch (FeignException feignException) {
+            throw new IllegalArgumentException("Invalid Username or Password");
+        }
 
         return new KeycloakResponseDTO(
                 userService.getUserByUsername(loginData.getUsername()).getUserId(),
