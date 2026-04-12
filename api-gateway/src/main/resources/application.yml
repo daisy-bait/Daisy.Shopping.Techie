@@ -25,6 +25,11 @@ spring:
                   uri: lb://product-service
                   predicates:
                     - Path=/api/products/**
+                ### Product Service Route
+                - id: user-service
+                  uri: lb://user-service
+                  predicates:
+                    - Path=/api/users/**
                 #
                 ### Discovery Service Route
                 - id: discovery-service
@@ -42,7 +47,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_REALM_ISSUER}
+          issuer-uri: ${KEYCLOAK.REALM.ISSUER}
+
+keycloak:
+  realm: ${KEYCLOAK.REALM}
 
 eureka:
   client:
