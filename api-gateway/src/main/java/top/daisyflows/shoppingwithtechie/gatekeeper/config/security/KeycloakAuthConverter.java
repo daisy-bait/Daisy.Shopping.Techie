@@ -1,11 +1,12 @@
 package top.daisyflows.shoppingwithtechie.gatekeeper.config.security;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,9 +14,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Configuration
+@Component
 @Slf4j
 public class KeycloakAuthConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+
+    @Value("${keycloak.realm}")
+    private String realm;
 
     @Override
     public Collection<GrantedAuthority> convert(Jwt token) {
@@ -27,11 +31,10 @@ public class KeycloakAuthConverter implements Converter<Jwt, Collection<GrantedA
 
         List<String> roles = (List<String>) realmAccess.get("roles");
         Collection<GrantedAuthority> userRoles = new ArrayList<>();
-        roles.forEach(role -> {
-            userRoles.add(new SimpleGrantedAuthority("ROLE_".concat(role)));
-        });
-
-        log.info("userRoles: {}", userRoles);
+        roles.stream().filter(role -> !role.equals("default-roles-".concat(realm.toLowerCase())))
+                .forEach(role -> {
+                    userRoles.add(new SimpleGrantedAuthority("ROLE_".concat(role)));
+                });
 
         return userRoles;
     }

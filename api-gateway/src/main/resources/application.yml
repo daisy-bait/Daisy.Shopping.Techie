@@ -47,7 +47,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_REALM_ISSUER}
+          issuer-uri: ${KEYCLOAK.REALM.ISSUER}
+
+keycloak:
+  realm: ${KEYCLOAK.REALM}
 
 eureka:
   client:

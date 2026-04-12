@@ -1,6 +1,7 @@
 package top.daisyflows.shoppingwithtechie.gatekeeper.config.security;
 
 import jakarta.servlet.http.Cookie;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,11 +21,14 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuerUrl;
+
+    private final KeycloakAuthConverter keycloakAuthConverter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
@@ -42,8 +47,9 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth -> oauth
                         .bearerTokenResolver(cookieAccessTokenResolver())
                         .jwt(jwtConfigurer -> jwtConfigurer
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter()
-                                )))
+                                .jwtAuthenticationConverter(jwtToken -> {
+                                    return new JwtAuthenticationToken(jwtToken, keycloakAuthConverter.convert(jwtToken));
+                                })))
                 .build();
     }
 
@@ -65,13 +71,6 @@ public class SecurityConfig {
 
             return token;
         };
-    }
-
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(new KeycloakAuthConverter());
-        return converter;
     }
 
 }
