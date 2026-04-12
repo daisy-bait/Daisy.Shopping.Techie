@@ -46,4 +46,18 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie deleteAccessCookie = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .sameSite("Lax")
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
 }

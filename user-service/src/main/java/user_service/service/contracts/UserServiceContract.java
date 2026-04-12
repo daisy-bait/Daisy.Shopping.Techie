@@ -15,6 +15,8 @@ public interface UserServiceContract {
 
     UserToOutInfoDTO getUserByUsername(String username);
 
+    UserToOutInfoDTO getUserByEmail(String email);
+
     void changeStatus(String keycloakUserId);
 
     void assignRole(String keycloakUserId, String roleName);

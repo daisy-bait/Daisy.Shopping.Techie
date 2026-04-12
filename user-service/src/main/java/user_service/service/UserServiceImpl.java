@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserServiceContract {
             log.error("AN ERROR OCCURRED WHILE ASSIGNING ROLE {} TO USER {}: {}",
                     "USER", userId, ex.getMessage());
             keycloak.realm(realm).users().delete(userId);
+            throw new RuntimeException(ex);
         }
 
         return new UserToOutCreateDTO(userId);
@@ -92,8 +93,32 @@ public class UserServiceImpl implements UserServiceContract {
 
     @Override
     public UserToOutInfoDTO getUserByUsername(String username) {
-        UserRepresentation userFromKeycloak = keycloak.realm(realm)
-                .users().searchByUsername(username, true).get(0);
+        List<UserRepresentation> usersFromKeycloak = keycloak.realm(realm)
+                .users().searchByUsername(username, true);
+
+        if (usersFromKeycloak.isEmpty()) {
+            return null;
+        }
+
+        UserRepresentation userFromKeycloak = usersFromKeycloak.get(0);
+
+        extracted(userFromKeycloak);
+
+        return new UserToOutInfoDTO(
+                userFromKeycloak.getId(), userFromKeycloak.getUsername(), userFromKeycloak.getEmail()
+        );
+    }
+
+    @Override
+    public UserToOutInfoDTO getUserByEmail(String email) {
+        List<UserRepresentation> usersFromKeycloak = keycloak.realm(realm)
+                .users().searchByEmail(email, true);
+
+        if (usersFromKeycloak.isEmpty()) {
+            return null;
+        }
+
+        UserRepresentation userFromKeycloak = usersFromKeycloak.get(0);
 
         extracted(userFromKeycloak);
 
