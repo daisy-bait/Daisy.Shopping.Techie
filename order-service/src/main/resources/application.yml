@@ -49,6 +49,7 @@ management:
   endpoint:
     health:
       show-details: always
+      show-components: always
   info:
     env:
       enabled: true #Required for Eureka
@@ -67,10 +68,14 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
     instances:
-      feignServer:
+      inventory:
         base-config: default
-        failure-rate-threshold: 50
 
+  timelimiter:
+    instances:
+      inventory:
+        timeout-duration.seconds: 3
+# Resilience4j Time Limiter
 
 logging:
   pattern:
