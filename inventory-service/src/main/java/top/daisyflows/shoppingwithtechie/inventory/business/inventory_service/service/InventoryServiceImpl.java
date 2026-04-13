@@ -25,7 +25,7 @@ public class InventoryServiceImpl implements InventoryServiceContract {
         log.info("=====[INVENTORY_SERVICE] SIMULATING WAIT FOR CIRCUIT BREAKER TIMEOUT=====");
         log.info("=====[INVENTORY_SERVICE] WAIT STARTED=====");
         try {
-            Thread.sleep(10000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) { log.error("=====[INVENTORY_SERVICE] ERROR DURING WAITING -> {}=====", e.getMessage()); };
         log.info("=====[INVENTORY_SERVICE] WAIT ENDED=====");
         List<ProductToVerifyOutDTO> verifyListResponse = new ArrayList<>();
