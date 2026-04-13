@@ -1,6 +1,7 @@
 package top.daisyflows.shoppingwithtechie.orders.business.order_service.rest.controller;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,7 @@ public class OrderController {
 
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
     @TimeLimiter(name = "inventory", fallbackMethod = "fallbackMethod")
+    @Retry(name = "inventory")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public CompletableFuture<ResponseEntity<OrderToOutCreateDTO>> placeOrder(@RequestBody OrderToInCreateDTO orderRequest) {
