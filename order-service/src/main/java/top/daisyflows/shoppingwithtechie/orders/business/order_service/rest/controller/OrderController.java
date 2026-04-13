@@ -22,18 +22,20 @@ public class OrderController {
     private final OrderServiceContract orderService;
 
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
-    @TimeLimiter(name = "inventory")
+    @TimeLimiter(name = "inventory", fallbackMethod = "fallbackMethod")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<CompletableFuture<OrderToOutCreateDTO>> placeOrder(@RequestBody OrderToInCreateDTO orderRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest))
+    public CompletableFuture<ResponseEntity<OrderToOutCreateDTO>> placeOrder(@RequestBody OrderToInCreateDTO orderRequest) {
+        return CompletableFuture.supplyAsync(() ->
+                ResponseEntity.status(HttpStatus.CREATED).body(orderService.placeOrder(orderRequest))
         );
     }
 
-    public ResponseEntity<CompletableFuture<ErrorMessage>> fallbackMethod(OrderToInCreateDTO orderRequest, RuntimeException error) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
-                CompletableFuture.supplyAsync(() -> new ErrorMessage("Service Unavailable An Error Ocurred: \"" + error.getMessage() + "\", Please try again in a few minutes", HttpStatus.SERVICE_UNAVAILABLE.value()))
+    public CompletableFuture<ResponseEntity<ErrorMessage>> fallbackMethod(OrderToInCreateDTO orderRequest, RuntimeException error) {
+        return CompletableFuture.supplyAsync(() ->
+                ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new ErrorMessage(
+                        "Service Unavailable An Error Ocurred: \"" + error.getMessage() + "\", " +
+                                "Please try again in a few minutes", HttpStatus.SERVICE_UNAVAILABLE.value()))
         );
     }
 
