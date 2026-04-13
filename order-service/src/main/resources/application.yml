@@ -22,6 +22,10 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: create-drop
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
 
 eureka:
   client:
@@ -31,6 +35,55 @@ eureka:
     instance-id: ${spring.application.name}:${random.uuid}
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
+
+# Actuator Properties
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  info:
+    env:
+      enabled: true #Required for Eureka
+
+# Resilience4J Properties
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        sliding-window-type: count_based
+        sliding-window-size: 5
+        failure-rate-threshold: 80
+        wait-duration-in-open-state.seconds: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+    instances:
+      inventory:
+        base-config: default
+
+# Resilience4j Time Limiter
+  timelimiter:
+    instances:
+      inventory:
+        timeout-duration.seconds: 3
+
+# Resilience4j Retry Properties
+  retry:
+    instances:
+      inventory:
+        max-attempts: 3
+        wait-duration:
+          seconds: 5
 
 logging:
   pattern:

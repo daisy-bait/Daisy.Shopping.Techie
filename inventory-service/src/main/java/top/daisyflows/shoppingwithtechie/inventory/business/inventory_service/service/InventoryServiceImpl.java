@@ -22,14 +22,20 @@ public class InventoryServiceImpl implements InventoryServiceContract {
     @Override
     @Transactional(readOnly = true)
     public InventoryToVerifyOutDTO verifyProductStock(InventoryToVerifyInDTO verifyRequest) {
+        log.info("=====[INVENTORY_SERVICE] SIMULATING WAIT FOR CIRCUIT BREAKER TIMEOUT=====");
+        log.info("=====[INVENTORY_SERVICE] WAIT STARTED=====");
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) { log.error("=====[INVENTORY_SERVICE] ERROR DURING WAITING -> {}=====", e.getMessage()); };
+        log.info("=====[INVENTORY_SERVICE] WAIT ENDED=====");
         List<ProductToVerifyOutDTO> verifyListResponse = new ArrayList<>();
         verifyRequest.getProductsToVerifyStock().forEach(product -> {
             String skuCode = product.getSkuCode();
             if (!inventoryRepository.existsBySkuCode(skuCode)) {
-                log.info("=====[INVENTORY_SERVICE] DOES NOT EXIST PRODUCT | WITH SKU_CODE -------> {}====", skuCode);
+                log.info("=====[INVENTORY_SERVICE] DOES NOT EXIST PRODUCT | WITH SKU_CODE -------> {}=====", skuCode);
                 throw new IllegalArgumentException("SKU CODE DOES NOT EXIST");
             } else {
-                log.info("=====[INVENTORY_SERVICE] PRODUCT EXISTS | WITH SKU_CODE -------> {}====", skuCode);
+                log.info("=====[INVENTORY_SERVICE] PRODUCT EXISTS | WITH SKU_CODE -------> {}=====", skuCode);
                 Integer entityStock = inventoryRepository.findBySkuCode(skuCode).getQuantity();
 
                 verifyListResponse.add(entityStock < product.getStockQuantity() ?
