@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          # PUT MORE SPECIFIC → THE LEAST SPECIFIC ROUTE
+          routes:
+            ### Inventory Service Route
+            - id: inventory-service
+              uri: lb://inventory-service
+              predicates:
+                - Path=/api/products/*/inventory/**
+            ### Order Service Route
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api/products/*/orders/**
+            ### Product Service Route
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+                - Path=/api/products/**
+            ### Product Service Route
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/users/**
+            #
+            ### Discovery Service Route
+            - id: discovery-service
+              uri: http://localhost:8761
+              predicates:
+                - Path=/eureka/web,/eureka/web/
+              filters:
+                - SetPath=/
+            ### Discovery Service Static Resources Route
+            - id: discovery-service-static
+              uri: http://localhost:8761
+              predicates:
+                - Path=/eureka/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK.REALM.ISSUER}
+
+keycloak:
+  realm: ${KEYCLOAK.REALM}
