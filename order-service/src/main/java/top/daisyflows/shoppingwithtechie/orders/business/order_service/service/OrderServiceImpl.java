@@ -1,5 +1,7 @@
 package top.daisyflows.shoppingwithtechie.orders.business.order_service.service;
 
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -28,6 +30,7 @@ public class OrderServiceImpl implements OrderServiceContract {
 
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
+    private final Tracer tracer;
 
     public OrderToOutCreateDTO placeOrder(OrderToInCreateDTO orderRequest) {
         OrderEntity order = new OrderEntity();
@@ -46,16 +49,22 @@ public class OrderServiceImpl implements OrderServiceContract {
                 ).toList()
         );
 
-        InventoryToVerifyOutDTO inventoryResponse = inventoryClient.verifyInventory(inventoryToVerifyInDTO);
+        Span inventoryServiceLookup = tracer.nextSpan().name("InventoryServiceLookup");
+        try (Tracer.SpanInScope spanInScope = tracer.withSpan(inventoryServiceLookup.start())) {
+            InventoryToVerifyOutDTO inventoryResponse = inventoryClient.verifyInventory(inventoryToVerifyInDTO);
 
-        log.info("=====[ORDER_SERVICE] PRODUCT VERIFICATION ====");
-        inventoryResponse.getProductToVerifyOutDTOList().forEach(
-                verification -> {
-                    log.info("=====[ORDER_SERVICE] PRODUCT UNAVAILABLE -----> SKU CODE:{} | WANTED QUANTITY:{} | ACTUAL QUANTITY: {} ====",
-                            verification.getSkuCode(), verification.getIntroducedQuantity(), verification.getActualQuantity());
-                    if (!verification.isAvailable()) throw new RuntimeException("PRODUCT NOT VALID");
-                }
-        );
+            log.info("=====[ORDER_SERVICE] PRODUCT VERIFICATION ====");
+            inventoryResponse.getProductToVerifyOutDTOList().forEach(
+                    verification -> {
+                        log.info("=====[ORDER_SERVICE] PRODUCT UNAVAILABLE -----> SKU CODE:{} | WANTED QUANTITY:{} | ACTUAL QUANTITY: {} ====",
+                                verification.getSkuCode(), verification.getIntroducedQuantity(), verification.getActualQuantity());
+                        if (!verification.isAvailable()) throw new RuntimeException("PRODUCT NOT VALID");
+                    }
+            );
+        } finally {
+            inventoryServiceLookup.end();
+        }
+
         log.info("=====[ORDER_SERVICE] VALID PRODUCTS IN ORDER ====");
 
         Long orderId = orderRepository.save(order).getOrderId();
