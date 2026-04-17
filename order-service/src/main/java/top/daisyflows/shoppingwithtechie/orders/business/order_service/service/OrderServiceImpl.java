@@ -14,6 +14,7 @@ import top.daisyflows.shoppingwithtechie.orders.business.order_service.client.In
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderEntity;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.entity.OrderLineItemsEntity;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.persistence.repository.OrderRepository;
+import top.daisyflows.shoppingwithtechie.orders.business.order_service.publisher.MessageProducer;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.rest.dto.OrderLineItemsToInCreateDTO;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.rest.dto.OrderToInCreateDTO;
 import top.daisyflows.shoppingwithtechie.orders.business.order_service.rest.dto.OrderToOutCreateDTO;
@@ -31,6 +32,8 @@ public class OrderServiceImpl implements OrderServiceContract {
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
     private final Tracer tracer;
+
+    private final MessageProducer messageProducer;
 
     public OrderToOutCreateDTO placeOrder(OrderToInCreateDTO orderRequest) {
         OrderEntity order = new OrderEntity();
@@ -69,6 +72,7 @@ public class OrderServiceImpl implements OrderServiceContract {
 
         Long orderId = orderRepository.save(order).getOrderId();
         log.info("=====[ORDER_SERVICE] ORDER PLACED | WITH ID -------> {}====", orderId);
+        messageProducer.publishMessage("Order Placed with ID → " + orderId);
 
         return new OrderToOutCreateDTO(orderId.toString());
 

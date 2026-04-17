@@ -12,10 +12,10 @@ eureka:
 
 spring:
   rabbitmq:
-    host: ${AMQP.HOST}
-    port: ${AMQP.PORT}
-    username: ${AMQP.USERNAME}
-    password: ${AMQP.PASSWORD}
+    host: ${AMQP.HOST:localhost}
+    port: ${AMQP.PORT:5672}
+    username: ${AMQP.USERNAME:kadanarpa}
+    password: ${AMQP.PASSWORD:200548}
   cloud:
     openfeign:
       circuitbreaker: { enabled: true }
