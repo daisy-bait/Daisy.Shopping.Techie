@@ -45,7 +45,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK.REALM.ISSUER}
+          issuer-uri: ${KEYCLOAK.REALM.ISSUER:http://localhost:7080}
 
 keycloak:
   realm: ${KEYCLOAK.REALM}
