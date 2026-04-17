@@ -10,6 +10,16 @@ eureka:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
 
+spring:
+  rabbitmq:
+    host: ${AMQP.HOST}
+    port: ${AMQP.PORT}
+    username: ${AMQP.USERNAME}
+    password: ${AMQP.PASSWORD}
+  cloud:
+    openfeign:
+      circuitbreaker: { enabled: true }
+
 management:
   endpoints:
     web:
@@ -24,10 +34,6 @@ management:
       zipkin:
         endpoint: http://localhost:9411/api/v2/spans
 
-spring:
-  cloud:
-    openfeign:
-      circuitbreaker: { enabled: true }
 # Resilience4J Properties
 resilience4j:
   circuitbreaker:
