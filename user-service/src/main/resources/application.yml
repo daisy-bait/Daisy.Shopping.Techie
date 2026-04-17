@@ -1,38 +1,5 @@
-server:
-  port: 0
-
 spring:
   application:
     name: user-service
-  banner:
-    location: BANNER_LOCATION.txt
-    # No mostrar banner
-    #main:
-    #banner-mode: off
-
-keycloak:
-  server-url: ${KEYCLOAK.SERVER_URL}
-  realm: ${KEYCLOAK.REALM}
-  clientId: ${KEYCLOAK.CLIENT_ID}
-  clientSecret: ${KEYCLOAK.CLIENT_SECRET}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-  instance:
-    instance-id: ${spring.application.name}:${random.uuid}
-    prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 10
-
-logging:
-  pattern:
-    dateformat: hh:mm
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+  config:
+    import: "optional:configserver:http://localhost:8888"

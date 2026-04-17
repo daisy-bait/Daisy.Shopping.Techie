@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3308/MSVC_Techie_Shop_Orders?useSSL=false&serverTimeZone=UTC&allPublicKeyRetrival=true
+    username: root
+    password: 200548
+  jpa:
+    properties:
+      hibernate:
+        # Mostrar Mensajes SQL en Consola
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventory:
+        base-config: default
+  timelimiter:
+    instances:
+      inventory: { timeout-duration: 3s }
